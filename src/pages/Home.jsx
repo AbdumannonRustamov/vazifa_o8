@@ -1,44 +1,40 @@
+import React from "react";
 import { Link } from "react-router-dom";
-import { useFetch } from "../hooks/useFetch";
+import { useGetProductsQuery } from "../services/apiSlice";
 
-function Home() {
-  const { data, isPending, error } = useFetch("https://fakestoreapi.com/products");
+const Home = () => {
+  const { data: products, isLoading, error } = useGetProductsQuery();
 
-  if (isPending) return <p className="text-center text-gray-500 mt-10">Loading...</p>;
-  if (error) return <p className="text-center text-red-600 mt-10">Error: {error}</p>;
+  if (isLoading) return <p className="text-center text-lg">Yuklanmoqda...</p>;
+  if (error) return <p className="text-center text-red-500">Xatolik: {error.error}</p>;
 
   return (
-    <div className="px-6 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {data?.length > 0 ? (
-        data.map((product) => (
+    <div className="px-4 py-8">
+      <h2 className="text-2xl font-bold text-center mb-6">Mahsulotlar</h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products?.map((product) => (
           <Link
             to={`/product/${product.id}`}
             key={product.id}
-            className="bg-white rounded-xl p-5 shadow-md hover:shadow-xl transition-shadow duration-300"
+            className="card shadow-lg bg-base-100 hover:scale-105 transition-transform duration-300"
           >
-            <img
-              className="mx-auto h-48 w-full object-contain rounded-md"
-              src={product.image}
-              alt={product.title}
-            />
-            <h2 className="text-base font-semibold mt-4 line-clamp-1">{product.title}</h2>
-            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-              {product.description}
-            </p>
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-lg font-bold text-green-600">${product.price}</span>
-              <span className="text-sm bg-fuchsia-100 text-fuchsia-700 px-2 py-1 rounded-md">
-                {product.category}
-              </span>
+            <figure className="p-4">
+              <img src={product.image} alt={product.title} className="h-40 object-contain" />
+            </figure>
+            <div className="card-body">
+              <h2 className="card-title text-base">
+                {product.title.length > 40 ? product.title.slice(0, 40) + "..." : product.title}
+              </h2>
+              <p className="text-sm text-gray-500">{product.category}</p>
+              <div className="text-lg font-semibold">{product.price} $</div>
+              <div className="mt-2 badge badge-outline">Reyting: {product.rating.rate}</div>
             </div>
-            <p className="mt-2 text-sm text-yellow-600 font-medium">⭐ Rating: {product.rating?.rate}</p>
           </Link>
-        ))
-      ) : (
-        <p className="col-span-full text-center text-gray-500">No products found.</p>
-      )}
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default Home;

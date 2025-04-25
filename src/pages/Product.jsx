@@ -1,16 +1,17 @@
+// src/pages/Product.jsx
 import { useParams } from "react-router-dom";
-import { useFetch } from "../hooks/useFetch";
+import { useGetProductByIdQuery } from "../services/apiSlice";
 
 function Product() {
   const { id } = useParams();
   const {
     data: product,
-    isPending,
+    isLoading,
     error,
-  } = useFetch(`https://fakestoreapi.com/products/${id}`);
+  } = useGetProductByIdQuery(id);
 
-  if (isPending) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.error}</p>;
 
   return (
     <div>
